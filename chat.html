@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <meta charset="UTF-8">
+    <title>ATHEMIANARTORY WEB CHAT</title>
+    <style>
+#notification-panel {
+    position: absolute;
+    top: 60px; 
+    right: 10px; /* Chỉnh lại right để hiện bên phải sidebar */
+    width: 260px;
+    background: #111; 
+    border: 1px solid #333;
+    border-radius: 12px; 
+    display: none; 
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    text-align: left; /* Đảm bảo chữ canh lề trái */
+}
+.noti-header {
+    padding: 12px; border-bottom: 1px solid #222;
+    display: flex; justify-content: space-between;
+    font-size: 14px; color: #fff; font-weight: bold;
+}
+.noti-list { max-height: 300px; overflow-y: auto; }
+.noti-item {
+    padding: 12px; border-bottom: 1px solid #1a1a1a;
+    font-size: 13px; color: #ccc; cursor: default;
+}
+.noti-item:hover { background: #1a1a1a; }
+.noti-item b { color: #0084ff; }
+/* Chấm đỏ thông báo */
+/* Tìm và thay thế đoạn .badge cũ bằng đoạn này */
+.badge {
+    background: #ff0000;
+    color: white;
+    border-radius: 50%;
+    /* Chỉnh padding để số nằm giữa vòng tròn */
+    padding: 2px 5px; 
+    font-size: 10px;
+    font-weight: bold;
+    position: absolute;
+    /* Vị trí chuẩn để đè lên góc phải cái chuông */
+    top: -2px; 
+    right: -5px; 
+    display: none;
+    border: 2px solid #000; /* Viền đen để nhìn rõ trên nền tối */
+    pointer-events: none; /* Để không bị bấm nhầm vào số */
+}
+/* Giao diện bảng thông báo */
+#notification-panel {
+    position: absolute;
+    top: 60px; left: 10px; width: 280px;
+    background: #111; border: 1px solid #333;
+    border-radius: 12px; display: none; z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+
+.noti-header {
+    padding: 12px; border-bottom: 1px solid #222;
+    display: flex; justify-content: space-between;
+    font-size: 14px; color: #fff; font-weight: bold;
+}
+
+
+.noti-list { max-height: 300px; overflow-y: auto; }
+.noti-item {
+    padding: 12px; border-bottom: 1px solid #1a1a1a;
+    font-size: 13px; color: #ccc; cursor: default;
+}
+
+
+.noti-item:hover { background: #1a1a1a; }
+.noti-item b { color: #0084ff; }
+
+
+
+        /* CSS cho Bảng giới thiệu */
+#intro-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Làm tối nền phía sau */
+    z-index: 10000; /* Nằm trên cả phần đăng nhập */
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px); /* Làm mờ ảnh nền */
+}
+.delete-friend-btn:hover {
+    background: rgba(255, 77, 77, 0.1);
+    border-radius: 50%;
+    transform: scale(1.2);
+    transition: 0.2s;
+}
+
+
+.intro-box {
+    background: #111; border: 1px solid #0084ff; border-radius: 25px;
+    width: 400px; padding: 30px; text-align: center; color: white;
+    box-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
+    animation: fadeInScale 0.5s ease-out;
+}
+.intro-header h2 { color: #0084ff; margin: 15px 0; }
+.intro-content { text-align: left; margin: 20px 0; line-height: 1.6; }
+.intro-content ul { padding-left: 20px; }
+.intro-content li { margin-bottom: 8px; }
+#close-intro-btn {
+    width: 100%; padding: 15px; border-radius: 15px; border: none;
+    background: linear-gradient(45deg, #0084ff, #00c6ff);
+    color: white; font-weight: bold; cursor: pointer; font-size: 16px;
+    transition: 0.3s;
+}
+#close-intro-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0, 132, 255, 0.4); }
+#intro-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: url('nen.jpg.jpg') no-repeat center center/cover;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hiệu ứng lớp phủ tối để nổi bật bảng */
+#intro-overlay::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(15px); /* Làm mờ nền cực mạnh cho chuyên nghiệp */
+}
+
+.intro-card {
+    position: relative;
+    display: flex;
+    width: 80%;
+    max-width: 900px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+
+/* Phần hình ảnh bên trái */
+.intro-visual {
+    flex: 1;
+    background: linear-gradient(135deg, #0084ff, #00c6ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.intro-visual img {
+    width: 60%;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Phần nội dung bên phải */
+.intro-text {
+    flex: 1.2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.intro-text h1 {
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #fff, #0084ff);
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle { color: #888; margin-bottom: 30px; font-style: italic; }
+
+.feature-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.feature-item span { font-size: 24px; }
+.feature-item h3 { margin: 0; font-size: 16px; color: #0084ff; }
+.feature-item p { margin: 0; font-size: 13px; color: #ccc; }
+
+#close-intro-btn {
+    padding: 15px;
+    border: none;
+    border-radius: 50px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+#close-intro-btn:hover {
+    background: #0084ff;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 132, 255, 0.3);
+}
+#intro-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: #000; /* Nền đen hoàn toàn để sang trọng */
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.intro-card-pro {
+    position: relative;
+    width: 450px; /* Độ rộng vừa phải kiểu Poster */
+    background: #111; /* Nền xám đen cực sâu */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Khu vực ảnh phía trên */
+.intro-image-area {
+    position: relative;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+}
+
+.intro-image-area img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 10s ease;
+}
+
+.intro-card-pro:hover .intro-image-area img {
+    transform: scale(1.1); /* Hiệu ứng zoom ảnh chậm rãi chuyên nghiệp */
+}
+
+.image-overlay-gradient {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%; height: 50%;
+    background: linear-gradient(to top, #111, transparent);
+}
+
+/* Khu vực nội dung phía dưới */
+.intro-body-pro {
+    padding: 40px;
+    text-align: center;
+    color: #fff;
+}
+
+.brand-name {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: #0084ff;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.intro-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.intro-description {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    font-weight: 300;
+}
+
+.divider {
+    width: 40px;
+    height: 2px;
+    background: #0084ff;
+    margin: 0 auto 30px;
+}
+
+#close-intro-btn {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: transparent;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#close-intro-btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+}
+#intro-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    /* THAY LINK ẢNH CÔNG TY CỦA BẠN VÀO ĐÂY */
+    background: url('link-anh-cong-ty-cua-ban.jpg') no-repeat center center;
+    background-size: cover; /* Quan trọng: Giúp ảnh tràn toàn màn hình */
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Lớp phủ tối để chữ nổi bật trên ảnh */
+#intro-overlay::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Độ đậm nhạt của lớp phủ (0.5 là 50%) */
+    z-index: 1;
+}
+
+.intro-content-full {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.brand-badge {
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #0084ff;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.main-title {
+    font-size: clamp(32px, 5vw, 56px); /* Tự động co giãn cỡ chữ */
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.main-lead {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: 40px;
+    font-weight: 300;
+}
+
+#close-intro-btn {
+    padding: 18px 48px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: white;
+    background: transparent;
+    border: 2px solid white;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+#close-intro-btn:hover {
+    background: white;
+    color: black;
+}
+
+.intro-footer {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.footer-note {
+    margin-top: 25px;
+    font-size: 10px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+/* Hiệu ứng bay bổng */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+/* Hiệu ứng hiện ra */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+        /* GIỮ NGUYÊN GIAO DIỆN GỐC */
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: #000; 
+            background-image: url('nen.jpg.jpg');
+            background-size: cover; background-position: center;
+            margin: 0; padding: 0; height: 100vh; overflow: hidden; 
+        }
+        .main-wrapper { display: flex; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); }
+        
+        /* SIDEBAR */
+        .sidebar { width: 300px; background: #000; border-right: 1px solid #222; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-size: 20px; font-weight: bold; color: white; border-bottom: 1px solid #111; }
+        .room-controls { padding: 15px; border-bottom: 1px solid #111; }
+        .room-controls input {
+            width: 100%; padding: 12px; border-radius: 10px; border: none; box-sizing: border-box;
+            background: #1a1a1a; color: white; margin-bottom: 10px; outline: none;
+        }
+        .btn-group { display: flex; gap: 5px; }
+        .btn-group button { flex: 1; padding: 10px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; }
+        #create-btn { background: #1a1a1a; border: 1px solid #333; }
+        #join-btn { background: #0084ff; }
+        .current-room-tag { background: #0a0a0a; border-radius: 8px; padding: 10px; margin: 10px 15px; color: #ff4d94; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #222; }
+
+        /* PHẦN BẠN BÈ MỚI */
+        .friend-section { flex: 1; overflow-y: auto; padding: 15px; }
+        .friend-section h4 { color: #555; font-size: 12px; text-transform: uppercase; margin-bottom: 10px; }
+        .friend-item { padding: 10px; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .friend-item:hover { background: #1a1a1a; }
+        .friend-item.active { background: #0084ff; }
+        .add-friend-box { padding: 15px; border-top: 1px solid #111; }
+
+        /* CHAT BOX AREA */
+        .chat-container { flex: 1; display: flex; flex-direction: column; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+
+        /* THANH CÔNG CỤ DƯỚI CÙNG */
+        .bottom-toolbar {
+            background: #000;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-top: 1px solid #111;
+        }
+        #username { 
+            width: 120px; padding: 10px; border-radius: 15px; 
+            border: none; background: #1a1a1a; color: #0084ff; 
+            font-weight: bold; text-align: center; outline: none;
+        }
+        .input-wrapper { 
+            flex: 1; background: #1a1a1a; border-radius: 25px; 
+            display: flex; align-items: center; padding: 5px 20px;
+        }
+        #msg-input { 
+            flex: 1; background: transparent; border: none; 
+            color: white; padding: 10px 0; outline: none; font-size: 14px;
+        }
+        .icon-btn { 
+            background: #333; color: white; border: none; 
+            width: 45px; height: 40px; border-radius: 20px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        #send-btn { 
+            background: #0084ff; color: white; border: none; 
+            padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer;
+        }
+
+        /* OVERLAY ĐĂNG NHẬP */
+        /* GIAO DIỆN ĐĂNG NHẬP CYBERPUNK */
+/* GIAO DIỆN ĐĂNG NHẬP MAP CYBERPUNK */
+/* GIAO DIỆN ĐĂNG NHẬP MAP CYBERPUNK */
+#auth-overlay {
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    /* QUAN TRỌNG: Đảm bảo tên file ảnh dưới đây trùng khớp với file ảnh bản đồ của bạn */
+    background: #000 url('image_29a4f0.jpg') no-repeat center center;
+    background-size: cover; 
+    z-index: 9999; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Thêm hiệu ứng radar quét để làm nổi bật tính Cyberpunk */
+#auth-overlay::after {
+    content: "";
+    position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+    background: rgba(0, 255, 0, 0.5);
+    box-shadow: 0 0 15px #00ff00;
+    animation: scanline 4s linear infinite;
+    z-index: 10000; pointer-events: none;
+}
+
+@keyframes scanline {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+.auth-box { 
+    background: rgba(0, 10, 0, 0.9); 
+    padding: 35px; 
+    border-radius: 2px; 
+    width: 380px; 
+    text-align: center; 
+    border: 1px solid #00ff00; 
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    position: relative;
+    z-index: 10001;
+    backdrop-filter: blur(4px);
+}
+
+.auth-box h2 { 
+    color: #00ff00; 
+    font-size: 20px;
+    margin-bottom: 25px; 
+    letter-spacing: 4px;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+.auth-box input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border: 1px solid #004400; 
+    background: rgba(0, 30, 0, 0.5); 
+    color: #00ff00; 
+    box-sizing: border-box; 
+    outline: none;
+    font-size: 13px;
+}
+
+.auth-box input::placeholder { color: #004400; }
+
+.auth-box button { 
+    width: 100%; 
+    padding: 14px; 
+    border: 1px solid #00ff00; 
+    background: #00ff00; 
+    color: #000; 
+    font-weight: bold; 
+    cursor: pointer; 
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.auth-box button:hover { 
+    background: #000; 
+    color: #00ff00; 
+    box-shadow: 0 0 15px #00ff00;
+}
+
+.terminal-text {
+    font-size: 10px;
+    color: #00ff00;
+    text-align: left;
+    margin-top: 15px;
+    opacity: 0.7;
+}
+        .auth-box { background: #111; padding: 30px; border-radius: 20px; width: 300px; text-align: center; border: 1px solid #222; }
+        .auth-box h2 { color: white; margin-bottom: 20px; }
+        .auth-box input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: none; background: #222; color: white; box-sizing: border-box; }
+        .auth-box button { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #0084ff; color: white; font-weight: bold; cursor: pointer; }
+
+        /* TIN NHẮN */
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 70%; margin-bottom: 5px; }
+        .my-msg { align-self: flex-end; }
+        .my-msg .msg-text { background: #0084ff; color: white; border-radius: 15px 15px 0 15px; padding: 10px 15px; }
+        .other-msg { align-self: flex-start; }
+        .other-msg .msg-text { background: #1a1a1a; color: white; border-radius: 15px 15px 15px 0; padding: 10px 15px; }
+        .msg-name { font-size: 11px; color: #666; margin-bottom: 3px; }
+
+        #context-menu { position: fixed; z-index: 999; width: 150px; background: #111; border: 1px solid #333; border-radius: 10px; display: none; }
+        #context-menu div { padding: 12px; color: #ff4d4d; cursor: pointer; font-weight: bold; font-size: 13px; }
+        #emoji-picker { position: absolute; bottom: 80px; right: 100px; background: #111; border: 1px solid #333; border-radius: 15px; padding: 10px; display: none; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .emoji-item { cursor: pointer; font-size: 20px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <audio id="noti-sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3" preload="auto"></audio>
+    <div id="intro-overlay">
+    <div class="intro-content-full">
+        <div class="brand-badge">Astronomy-History-Geography-Webchat-Community</div>
+        <h1 class="main-title">ATHEMIANARTORY INTERNATIONAL</h1>
+        <p class="main-lead">
+            LỜI MỞ ĐẦU<br>
+            Xin chào, tôi là Death-Athemianar, đồng sáng lập của ATHEMIANARTORY CHAT, tôi ở đây, vì 1 lý do ngớ ngẩn nào đó lại làm ra ứng dụng này.
+            Từ năm 2026 thì zalo đã có quyết dịnh khá là đáng tiếc là quyết định thông tư, vì vậy...đơn giản thôi..có web này ra đời để phục vụ cho 
+            mọi người mà có thể nói chuyện mà không bị hoặc dòm ngó bởi các bên thứ ba, đó là lý do chính tôi làm ra ứng dụng này. gửi lời chào cũng như lời cảm ơn vì da den đây, nói chung là... enjoy!<br>
+            <br>
+            <br> Ký tên: Death-Athemianar (Sói Lịch Sử) <br>
+            tổng chỉ huy-đồng sáng lập ATHEMIANARTORY INTERNATIONAL với Kenter và ĐLMD.<br>
+
+
+        </p>
+        
+        <div class="action-area">
+            <button id="close-intro-btn">BẮT ĐẦU TRẢI NGHIỆM (Bản Demo)</button>
+        </div>
+
+        <div class="intro-footer">
+            <span>Security</span> • <span>Privacy</span> • <span>Performance</span>
+        </div>
+    </div>
+</div>
+    <div id="auth-overlay">
+    <div class="auth-box">
+        <div style="font-size: 9px; color: #00ff00; text-align: left; margin-bottom: 5px;">[ SYSTEM ACCESS PROTOCOL ]</div>
+        <h2>ĐĂNG NHẬP</h2>
+        
+        <input type="text" id="auth-user" placeholder="INPUT_ID_">
+        <input type="password" id="auth-pass" placeholder="INPUT_PASSCODE_">
+        
+        <button id="auth-btn">Bắt Đầu</button>
+        
+        <div class="terminal-text">
+            > Connection: Encrypted<br>
+            > Proxy: Enabled<br>
+            > Status: Waiting for Credentials...
+        </div>
+    </div>
+</div>
+
+    <div id="context-menu"><div id="delete-msg">Xóa tin nhắn 🗑️</div></div>
+
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; position: relative; padding: 20px; border-bottom: 1px solid #111;">
+    <span style="font-size: 16px;">ATHEMIAN CHAT</span>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <div style="position: relative; display: inline-block; cursor: pointer;" id="noti-wrapper">
+    <span id="noti-btn" style="font-size: 22px; color: #666;">🔔</span>
+    <span id="badge-count" class="badge">0</span>
+</div>
+<div style="display: flex; gap: 15px; align-items: center;">
+    <span id="call-btn" style="cursor: pointer; font-size: 18px; color: #666;">📞</span>
+    </div>
+        <span id="settings-btn" style="cursor: pointer; font-size: 18px; color: #666;">⚙️</span>
+    </div>
+    
+    <div id="notification-panel">
+        <div class="noti-header">
+            <span>Thông báo</span>
+            <span id="clear-noti" style="cursor: pointer; color: #555; font-size: 11px;">Xóa hết</span>
+        </div>
+        <div id="noti-list-content" class="noti-list">
+            <div class="noti-item"><b>Hệ thống:</b> Chào mừng bạn đã đến với AthemianArtory!</div>
+            <div class="noti-item" style="color: #ff9800;"><b>Bảo trì:</b> Dự kiến bảo trì máy chủ vào 11:14 phút tối nay.</div>
+        </div>
+    </div>
+</div>
+            <div class="room-controls">
+    <button id="discord-add-btn" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px dashed #555; background: #111; color: #0084ff; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;">
+        <span style="font-size: 20px;">+</span> Tạo hoặc Vào phòng
+    </button>
+
+    <div id="room-input-area" style="display: none; margin-top: 15px; padding: 10px; background: #0a0a0a; border-radius: 10px; border: 1px solid #222;">
+        <input type="text" id="room-input" placeholder="Tên phòng..." style="width: 100%; padding: 10px; background: #1a1a1a; border: none; color: white; border-radius: 8px; margin-bottom: 8px;">
+        <input type="password" id="room-pass" placeholder="Mật khẩu (nếu có)..." style="width: 100%; padding: 10px; background: #1a1a1a; border: none; color: white; border-radius: 8px; margin-bottom: 8px;">
+        <div class="btn-group" style="display: flex; gap: 5px;">
+            <button id="join-btn" style="flex: 1; padding: 8px; border-radius: 8px; border: none; background: #0084ff; color: white; font-weight: bold; cursor: pointer;">Vào ngay</button>
+            <button id="cancel-room-btn" style="padding: 8px; border-radius: 8px; border: none; background: #333; color: white; cursor: pointer;">Hủy</button>
+        </div>
+    </div>
+</div>
+            
+            <div class="current-room-tag">📍 <span id="room-display">Sảnh chung</span></div>
+
+            <div class="friend-section">
+                <h4>Bạn bè</h4>
+                <div id="friend-list"></div>
+            </div>
+
+            <div class="add-friend-box">
+                <input type="text" id="add-friend-input" placeholder="Tên bạn bè..." style="width:100%; padding:8px; border-radius:8px; border:none; background:#1a1a1a; color:white; margin-bottom:5px;">
+                <button id="add-friend-btn" style="width:100%; background:#28a745; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12px;">+ Kết bạn</button>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div id="chat-box"></div>
+            
+            <div class="bottom-toolbar">
+                <input type="text" id="username" readonly>
+                <div class="input-wrapper">
+                    <input type="text" id="msg-input" placeholder="Viết gì đó chubby đi nào..." autocomplete="off">
+                </div>
+                <button id="emoji-btn" class="icon-btn">😊</button>
+                <button id="img-btn" class="icon-btn">📷</button>
+                <button id="file-btn" class="icon-btn">📎</button>
+                <input type="file" id="file-input-hidden" style="display: none;">
+                <button id="send-btn">Gửi</button>
+            </div>
+
+            <div id="emoji-picker">
+                <span class="emoji-item">😊</span><span class="emoji-item">😂</span><span class="emoji-item">🤣</span><span class="emoji-item">😍</span><span class="emoji-item">🥰</span>
+                <span class="emoji-item">👍</span><span class="emoji-item">🔥</span><span class="emoji-item">❤️</span><span class="emoji-item">✨</span><span class="emoji-item">😭</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+
+// 2. Xử lý khi bạn bấm nút gọi (📞)
+document.getElementById('call-btn').onclick = () => {
+    const target = prompt("Nhập ID người bạn muốn gọi:");
+    if(!target) return;
+
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then((stream) => {
+        const call = peer.call(target + "-athemian-id", stream);
+        sendSystemNotification("Cuộc gọi", "Đang đổ chuông tới " + target, "orange");
+        
+        call.on('stream', (remoteStream) => {
+            const audio = document.createElement('audio');
+            audio.srcObject = remoteStream;
+            audio.play();
+        });
+    }).catch(err => {
+        sendSystemNotification("Lỗi", "Không tìm thấy Microphone!", "red");
+    });
+};
+// --- LOGIC HỆ THỐNG THÔNG BÁO ---
+const notiBtn = document.getElementById('noti-btn');
+const notiPanel = document.getElementById('notification-panel');
+const badge = document.getElementById('badge-count');
+const notiList = document.getElementById('noti-list-content');
+let unreadCount = 2; // Giả sử có 2 thông báo mới lúc đầu
+
+// Hiển thị số lượng thông báo ban đầu
+if(unreadCount > 0) {
+    badge.innerText = unreadCount;
+    badge.style.display = 'block';
+}
+function deleteFriend(event, friendName) {
+    // Ngăn chặn sự kiện click lan ra ngoài (không mở chat khi bấm nút xoá)
+    event.stopPropagation();
+
+    if (confirm(`Bạn có chắc muốn xoá ${friendName} khỏi danh sách bạn bè?`)) {
+        // Lệnh xoá trên GunDB bằng cách gán giá trị false hoặc null
+        gun.get('users-v1').get(myUser).get('friends').get(friendName).put(false);
+        
+        // Thông báo cho người dùng qua chuông 🔔
+        sendSystemNotification("Bạn bè", `Đã xoá ${friendName} khỏi danh sách.`, "gray");
+        
+        // Nếu đang chat với người này thì chuyển về Sảnh chung
+        if (document.getElementById('room-display').innerText.includes(friendName)) {
+            currentRoomId = 'chubby-lobby-v1';
+            document.getElementById('room-display').innerText = "📍 Sảnh chung";
+            listen(currentRoomId);
+        }
+    }
+}
+// Click vào chuông để đóng/mở bảng
+document.getElementById('noti-wrapper').onclick = (e) => {
+    e.stopPropagation();
+    const isVisible = notiPanel.style.display === 'block';
+    notiPanel.style.display = isVisible ? 'none' : 'block';
+    
+    // Khi mở bảng ra thì ẩn dấu chấm đỏ (đã xem)
+    if(!isVisible) {
+        unreadCount = 0;
+        badge.style.display = 'none';
+    }
+};
+
+// Hàm dùng để gửi thông báo mới từ hệ thống (Bạn có thể gọi hàm này ở bất cứ đâu)
+function sendSystemNotification(title, message, color = "#ccc") {
+    const div = document.createElement('div');
+    div.className = 'noti-item';
+    div.style.color = color;
+    div.innerHTML = `<b>${title}:</b> ${message}`;
+    
+    // Thêm vào danh sách thông báo
+    const listContent = document.getElementById('noti-list-content');
+    listContent.prepend(div); 
+    
+    // 1. Phát tiếng Ting
+    const sound = document.getElementById('noti-sound');
+    if(sound) sound.play();
+
+    // 2. Cập nhật số đỏ trên chuông
+    unreadCount++;
+    badge.innerText = unreadCount;
+    badge.style.display = 'block';
+}
+
+// Nút xóa sạch thông báo
+document.getElementById('clear-noti').onclick = () => {
+    notiList.innerHTML = '<div class="noti-item" style="text-align:center; color:#555;">Không có thông báo mới</div>';
+};
+
+// Click ra ngoài thì đóng bảng thông báo
+window.addEventListener('click', () => {
+    notiPanel.style.display = 'none';
+});
+    // --- XỬ LÝ NÚT TẠO PHÒNG KIỂU DISCORD ---
+const discordBtn = document.getElementById('discord-add-btn');
+const roomArea = document.getElementById('room-input-area');
+const cancelRoomBtn = document.getElementById('cancel-room-btn');
+
+// Bấm nút + thì hiện ô nhập
+discordBtn.onclick = () => {
+    roomArea.style.display = 'block';
+    discordBtn.style.display = 'none';
+};
+
+// Bấm Hủy thì quay lại nút +
+cancelRoomBtn.onclick = () => {
+    roomArea.style.display = 'none';
+    discordBtn.style.display = 'flex';
+};
+
+// Logic khi bấm "Vào ngay"
+document.getElementById('join-btn').onclick = () => {
+    const roomName = document.getElementById('room-input').value.trim();
+    const roomPass = document.getElementById('room-pass').value.trim();
+    
+    if(!roomName) return alert("Vui lòng nhập tên phòng!");
+
+    // Đổi phòng chat
+    currentRoomId = 'room-' + CryptoJS.SHA256(roomName + roomPass).toString().substring(0, 15);
+    document.getElementById('room-display').innerText = "Phòng: " + roomName;
+    
+    // Thu gọn lại giao diện sau khi vào phòng
+    roomArea.style.display = 'none';
+    discordBtn.style.display = 'flex';
+    
+    // Làm mới tin nhắn
+    listen(currentRoomId);
+};
+    const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
+    let currentRoomId = 'chubby-lobby-v1';
+    let myUser = "";
+    let selectedMsgId = null;
+
+    const chatBox = document.getElementById('chat-box');
+    const msgInput = document.getElementById('msg-input');
+    const userField = document.getElementById('username');
+    const menu = document.getElementById('context-menu');
+
+    // --- HÀM ĐĂNG NHẬP THÀNH CÔNG ---
+    function loginSuccess(user) {
+    myUser = user;
+    userField.value = user;
+    localStorage.setItem('saved_user_chubby', user);
+
+    // Ẩn các màn hình chờ
+    document.getElementById('intro-overlay').style.display = 'none';
+    document.getElementById('auth-overlay').style.display = 'none';
+    
+    // Chỉ khởi động hệ thống Call sau khi đã có tên người dùng
+    initCallSystem(user); 
+
+    loadFriends();
+    listen(currentRoomId);
+}
+    
+
+    // --- TỰ ĐỘNG ĐĂNG NHẬP KHI MỞ TRANG ---
+    window.onload = () => {
+        const savedName = localStorage.getItem('saved_user_chubby');
+        if(savedName) {
+            loginSuccess(savedName);
+        }
+    };
+
+    // --- XỬ LÝ NÚT BÁNH RĂNG (ĐĂNG XUẤT) ---
+    document.getElementById('settings-btn').onclick = () => {
+        if(confirm("Bạn có muốn đăng xuất không?")) {
+            localStorage.removeItem('saved_user_chubby'); // Xóa ghi nhớ
+            location.reload(); // Tải lại trang để về màn hình đăng nhập
+        }
+    };
+
+    // Nút đóng bảng giới thiệu
+    document.getElementById('close-intro-btn').onclick = () => {
+        const intro = document.getElementById('intro-overlay');
+        intro.style.transition = "opacity 0.5s ease";
+        intro.style.opacity = "0";
+        setTimeout(() => { intro.style.display = 'none'; }, 500);
+    };
+
+    // Nút đăng nhập/bắt đầu
+    document.getElementById('auth-btn').onclick = () => {
+        const user = document.getElementById('auth-user').value.trim();
+        const pass = document.getElementById('auth-pass').value.trim();
+        sendSystemNotification("Cảnh báo", "Vui lòng nhập ID và Mật khẩu!", "orange");
+
+        const hashedPass = CryptoJS.SHA256(pass).toString();
+        const userRef = gun.get('users-v1').get(user);
+
+        userRef.once((data) => {
+            if(data) {
+                if(data.pw === hashedPass) {
+                    loginSuccess(user);
+                } else {
+                    // Thay alert cũ bằng hàm thông báo chuyên nghiệp
+sendSystemNotification("Bảo mật", "Mật khẩu không chính xác!", "red");
+                }
+            } else {
+                userRef.put({ pw: hashedPass });
+                alert("Đã tạo tài khoản mới!");
+                loginSuccess(user);
+            }
+        });
+    };
+
+    // --- HỆ THỐNG TIN NHẮN & BẠN BÈ (GIỮ NGUYÊN) ---
+    // Xử lý khi nhấn nút Kết bạn
+document.getElementById('add-friend-btn').onclick = () => {
+    const friendName = document.getElementById('add-friend-input').value.trim();
+    
+    if(!friendName) {
+        sendSystemNotification("Hệ thống", "Bạn chưa nhập tên người muốn kết bạn!", "orange");
+        return;
+    }
+
+    // Lệnh lưu vào cơ sở dữ liệu GunDB
+    gun.get('users-v1').get(myUser).get('friends').get(friendName).put(true);
+    
+    // Hiện thông báo lên Chuông 🔔
+    sendSystemNotification("Bạn bè", "Đã gửi yêu cầu kết bạn tới " + friendName, "#28a745");
+    
+    // Xóa sạch ô nhập
+    document.getElementById('add-friend-input').value = "";
+};
+    function loadFriends() {
+    gun.get('users-v1').get(myUser).get('friends').map().on((val, name) => {
+        // Nếu val là null hoặc false, tức là đã xoá bạn, ta xoá phần tử đó khỏi giao diện
+        if (!val) {
+            const oldDiv = document.getElementById('f-' + name);
+            if (oldDiv) oldDiv.remove();
+            return;
+        }
+
+        let flist = document.getElementById('friend-list');
+        if (!document.getElementById('f-' + name)) {
+            let div = document.createElement('div');
+            div.id = 'f-' + name; 
+            div.className = 'friend-item';
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+            div.style.alignItems = 'center';
+
+            // Phần hiển thị tên
+            div.innerHTML = `
+                <span onclick="startPrivateChat('${name}')" style="flex: 1;">👤 ${name}</span>
+                <span class="delete-friend-btn" onclick="deleteFriend(event, '${name}')" 
+                      style="color: #ff4d4d; padding: 5px 10px; cursor: pointer; font-weight: bold; font-size: 14px;">×</span>
+            `;
+            flist.appendChild(div);
+        }
+    });
+}
+
+    function startPrivateChat(targetName) {
+        const id = [myUser, targetName].sort().join('-PRIVATE-');
+        currentRoomId = 'dm-' + CryptoJS.SHA256(id).toString().substring(0, 15);
+        document.getElementById('room-display').innerText = "Chat với: " + targetName;
+        document.querySelectorAll('.friend-item').forEach(i => i.classList.remove('active'));
+        if(document.getElementById('f-'+targetName)) document.getElementById('f-'+targetName).classList.add('active');
+        listen(currentRoomId);
+    }
+
+    function post(content, type = 'text') {
+        gun.get(currentRoomId).set({ name: myUser, text: content, type: type, time: Date.now() });
+    }
+
+    function listen(id) {
+        chatBox.innerHTML = '';
+        gun.get(id).map().on((data, mid) => {
+            const old = document.getElementById(mid);
+            if(!data) { if(old) old.remove(); return; }
+            let wrap = old || document.createElement('div');
+            wrap.id = mid;
+            if(!old) chatBox.appendChild(wrap);
+            const isMe = data.name === myUser;
+            wrap.className = `msg-wrapper ${isMe ? 'my-msg' : 'other-msg'}`;
+            let html = `<div class="msg-text">${data.text}</div>`;
+            if(data.type === 'image') html = `<div class="msg-text" style="background:none;"><img src="${data.text}" style="max-width:200px;border-radius:10px;"></div>`;
+            else if(data.type === 'file') html = `<div class="msg-text">📎 <a href="${data.text}" download style="color:#0084ff">File</a></div>`;
+            wrap.innerHTML = `<div class="msg-name">${data.name}</div>${html}`;
+            wrap.oncontextmenu = (e) => { e.preventDefault(); selectedMsgId = mid; menu.style.display='block'; menu.style.left=e.pageX+'px'; menu.style.top=e.pageY+'px'; };
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+
+    document.getElementById('send-btn').onclick = () => { if(msgInput.value){ post(msgInput.value); msgInput.value=""; } };
+    msgInput.onkeydown = (e) => { if(e.key==='Enter') document.getElementById('send-btn').click(); };
+
+    const fIn = document.getElementById('file-input-hidden');
+    document.getElementById('img-btn').onclick = () => { fIn.accept="image/*"; fIn.onchange=(e)=>{ const r=new FileReader(); r.onload=ev=>post(ev.target.result,'image'); r.readAsDataURL(e.target.files[0]); }; fIn.click(); };
+    document.getElementById('file-btn').onclick = () => { fIn.accept="*/*"; fIn.onchange=(e)=>{ const r=new FileReader(); r.onload=ev=>post(ev.target.result,'file'); r.readAsDataURL(e.target.files[0]); }; fIn.click(); };
+    document.getElementById('delete-msg').onclick = () => { if(selectedMsgId) { gun.get(currentRoomId).get(selectedMsgId).put(null); menu.style.display='none'; } };
+
+    const p = document.getElementById('emoji-picker');
+    document.getElementById('emoji-btn').onclick = (e) => { e.stopPropagation(); p.style.display = p.style.display==='grid'?'none':'grid'; };
+    document.querySelectorAll('.emoji-item').forEach(el => { el.onclick = () => { msgInput.value += el.innerText; p.style.display='none'; }; });
+    window.onclick = () => { menu.style.display='none'; p.style.display='none'; };
+    // --- HỆ THỐNG CALL (ĐÃ SỬA LỖI TÊ LIỆT) ---
+let peer = null;
+
+function initCallSystem(userId) {
+    // Nếu đã tạo rồi thì không tạo nữa
+    if (peer) return;
+
+    // Tạo ID cuộc gọi dựa trên tên người dùng
+    peer = new Peer(userId + "-athemian-id");
+
+    peer.on('open', (id) => {
+        console.log('Hệ thống gọi đã sẵn sàng. ID của bạn:', id);
+        sendSystemNotification("Hệ thống", "Hệ thống gọi điện đã sẵn sàng!", "#00ff00");
+    });
+
+    // Lắng nghe cuộc gọi đến
+    peer.on('call', (call) => {
+        if(confirm("Có cuộc gọi đến! Chấp nhận?")) {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+                call.answer(stream);
+                call.on('stream', (remoteStream) => {
+                    const audio = new Audio();
+                    audio.srcObject = remoteStream;
+                    audio.play();
+                });
+            }).catch(err => {
+                sendSystemNotification("Lỗi", "Không thể truy cập Microphone!", "red");
+            });
+        }
+    });
+}
+
+// Tìm nút gọi điện (📞) và xử lý khi bấm
+const callBtn = document.getElementById('call-btn');
+if(callBtn) {
+    callBtn.onclick = () => {
+        const target = prompt("Nhập ID người bạn muốn gọi:");
+        if(!target || !peer) return;
+
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+            const call = peer.call(target + "-athemian-id", stream);
+            sendSystemNotification("Cuộc gọi", "Đang gọi tới " + target + "...", "orange");
+            
+            call.on('stream', (remoteStream) => {
+                const audio = new Audio();
+                audio.srcObject = remoteStream;
+                audio.play();
+            });
+        });
+    };
+}
+</script>
+</body>
+
+</html>
